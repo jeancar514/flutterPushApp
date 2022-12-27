@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,26 +11,41 @@ class PushNotificationsProvider {
   // instancia
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   static String? token;
-  static StreamController<String> _messageStream =
+  static StreamController<dynamic> _messageStream =
       new StreamController.broadcast();
-  static Stream<String> get messagesStream => _messageStream.stream;
+  static Stream<dynamic> get messagesStream => _messageStream.stream;
 
   static Future _backgroundHandler(RemoteMessage message) async {
     print("BackgroundHandler Message: ${message.messageId}");
     print("BackgroundHandler Message Data : ${message.data}");
-    _messageStream.add(message.notification?.title ?? "no hay title");
+    if (Platform.isAndroid) {
+      final argument = message.data['story_id'];
+      _messageStream.add(argument);
+    } else {
+      print('no es android');
+    }
   }
 
   static Future _onMessageHandler(RemoteMessage message) async {
     print("onMessage Handler Message: ${message.messageId}");
     print("onMessage Handler Message Data : ${message.data}");
-    _messageStream.add(message.notification?.title ?? "no hay title");
+    if (Platform.isAndroid) {
+      final argument = message.data['story_id'];
+      _messageStream.add(argument);
+    } else {
+      print('no es android');
+    }
   }
 
   static Future _onMenssageOpenApp(RemoteMessage message) async {
     print("onMenssage OpenApp Message: ${message.messageId}");
     print("onMenssage OpenApp Message Data : ${message.data}");
-    _messageStream.add(message.notification?.title ?? "no hay title");
+    if (Platform.isAndroid) {
+      final argument = message.data['story_id'];
+      _messageStream.add(argument);
+    } else {
+      print('no es android');
+    }
   }
 
   static Future initializeApp() async {
